@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ഹോം റേഞ്ച് ഫാക്ടറി - റേറ്റ് ചെക്കിങ്</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Font - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1rem;
+            color: #374151;
+            background-color: #ffffff;
+            transition: all 0.2s ease-in-out;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+        }
+        .btn {
+            padding: 12px 24px;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .btn-primary {
+            background-color: #1e40af;
+            color: #ffffff;
+        }
+        .btn-primary:hover {
+            background-color: #1e3a8a;
+        }
+        .btn-secondary {
+            background-color: #d1d5db;
+            color: #4b5563;
+        }
+        .btn-secondary:hover {
+            background-color: #9ca3af;
+        }
+        .invoice-table th, .invoice-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .invoice-table th {
+            background-color: #e5e7eb;
+            font-weight: 600;
+            color: #4b5563;
+        }
+        .invoice-table tr:last-child td {
+            border-bottom: none;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .message-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fefcbf;
+            border: 1px solid #fde68a;
+            color: #92400e;
+            padding: 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            z-index: 1000;
+            display: none;
+            max-width: 90%;
+            text-align: center;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-6 sm:p-12 flex items-center justify-center min-h-screen">
+    <div class="max-w-4xl w-full bg-white rounded-xl shadow-lg p-6 sm:p-10">
+        <!-- Enquiry Form -->
+        <div class="bg-gray-50 p-6 rounded-xl mb-8 border border-gray-200">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-6">വിവരങ്ങൾ രേഖപ്പെടുത്തുക</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                    <label for="customerName" class="block text-sm font-medium text-gray-700 mb-1">പേര്</label>
+                    <input type="text" id="customerName" class="form-input" placeholder="നിങ്ങളുടെ പേര്">
+                </div>
+                <div>
+                    <label for="enquiryDate" class="block text-sm font-medium text-gray-700 mb-1">ഡേറ്റ് ഓഫ് എൻക്വയറി</label>
+                    <input type="date" id="enquiryDate" class="form-input">
+                </div>
+                <div>
+                    <label for="phoneNumber" class="block text-sm font-medium text-gray-700 mb-1">ഫോൺ നമ്പർ</label>
+                    <input type="tel" id="phoneNumber" class="form-input" placeholder="നിങ്ങളുടെ ഫോൺ നമ്പർ">
+                </div>
+                <div>
+                    <label for="location" class="block text-sm font-medium text-gray-700 mb-1">സ്ഥലം</label>
+                    <input type="text" id="location" class="form-input" placeholder="സ്ഥലം">
+                </div>
+            </div>
+        </div>
+
+        <!-- Rate Checker Section -->
+        <div class="bg-gray-50 p-6 rounded-xl mb-8 border border-gray-200">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-6">നിരക്കുകൾ തിരഞ്ഞെടുക്കുക</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
+                <!-- Posters Section -->
+                <div class="flex flex-col gap-3">
+                    <p class="block text-sm font-medium text-gray-700">പോസ്റ്ററുകൾ</p>
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="basic-poster" name="item" value="basic-poster" data-price="80" class="rounded text-blue-600 focus:ring-blue-500">
+                        <label for="basic-poster" class="text-sm text-gray-700">ബേസിക് പോസ്റ്റർ</label>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="semi-creative-poster" name="item" value="semi-creative-poster" data-price="130" class="rounded text-blue-600 focus:ring-blue-500">
+                        <label for="semi-creative-poster" class="text-sm text-gray-700">സെമി ക്രിയേറ്റീവ് പോസ്റ്റർ</label>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="mega-creative-poster" name="item" value="mega-creative-poster" data-price="500" class="rounded text-blue-600 focus:ring-blue-500">
+                        <label for="mega-creative-poster" class="text-sm text-gray-700">മെഗാ ക്രിയേറ്റീവ് പോസ്റ്റർ</label>
+                    </div>
+                </div>
+                
+                <!-- Videos Section -->
+                <div class="flex flex-col gap-3">
+                    <p class="block text-sm font-medium text-gray-700">വീഡിയോകൾ</p>
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="basic-video" name="item" value="basic-video" data-price="250" class="rounded text-blue-600 focus:ring-blue-500">
+                        <label for="basic-video" class="text-sm text-gray-700">ബേസിക് വീഡിയോ</label>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="voice-over-video" name="item" value="voice-over-video" data-price="250" class="rounded text-blue-600 focus:ring-blue-500">
+                        <label for="voice-over-video" class="text-sm text-gray-700">വോയിസ് ഓവർ വീഡിയോ</label>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="voice-animation-video" name="item" value="voice-animation-video" data-price="500" class="rounded text-blue-600 focus:ring-blue-500">
+                        <label for="voice-animation-video" class="text-sm text-gray-700">വോയിസ് ആനിമേഷൻ + മോഷൻ എലമെന്റ്സ് വീഡിയോ</label>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="avatar-video" name="item" value="avatar-video" data-price="600" class="rounded text-blue-600 focus:ring-blue-500">
+                        <label for="avatar-video" class="text-sm text-gray-700">അവതാരികയോട് കൂടിയ വീഡിയോ (5 സെക്കൻഡ്)</label>
+                    </div>
+                </div>
+                
+                <!-- Quantity Input -->
+                <div class="col-span-1 md:col-span-2 mt-4">
+                    <label for="quantity" class="block text-sm font-medium text-gray-700 mb-1">എണ്ണം (ക്വാണ്ടിറ്റി)</label>
+                    <input type="number" id="quantity" class="form-input" min="1" value="1">
+                </div>
+            </div>
+        </div>
+
+        <!-- Invoice Section -->
+        <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-inner" id="invoice-content">
+            <!-- Main Heading for PDF and Web -->
+            <div class="text-center mb-10">
+                <h1 class="text-3xl sm:text-4xl font-bold text-gray-800 mb-2">HOME RANGE FACTORY DESIGN WORK RATE CHECKING <br><span class="text-xl font-medium text-gray-600">(A FREELANCE VENTURE FOR ALL HOUSEWIVES IN KERALA)</span></h1>
+                <p class="text-gray-600 mt-2">A wide range of categories including print, digital, branding, packaging, and promotional materials.</p>
+            </div>
+            
+            <h2 class="text-2xl font-semibold text-gray-700 mb-6 text-center">നിങ്ങളുടെ കൊട്ടേഷൻ</h2>
+            <div id="invoice-details" class="mb-6 hidden">
+                <p class="text-sm text-gray-600"><span class="font-medium">പേര്:</span> <span id="display-name"></span></p>
+                <p class="text-sm text-gray-600"><span class="font-medium">തീയതി:</span> <span id="display-date"></span></p>
+                <p class="text-sm text-gray-600"><span class="font-medium">ഫോൺ നമ്പർ:</span> <span id="display-phone"></span></p>
+                <p class="text-sm text-gray-600"><span class="font-medium">സ്ഥലം:</span> <span id="display-location"></span></p>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full invoice-table text-sm text-gray-700">
+                    <thead>
+                        <tr>
+                            <th class="w-1/2 rounded-tl-lg">ഇനം</th>
+                            <th class="w-1/6">എണ്ണം</th>
+                            <th class="w-1/6">നിരക്ക് (ഒന്നിന്)</th>
+                            <th class="w-1/6 rounded-tr-lg">ആകെ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="invoiceTableBody">
+                        <!-- Items will be dynamically added here -->
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" class="text-right font-bold text-lg pr-4 border-t-2 border-gray-300">ആകെ തുക:</td>
+                            <td id="grandTotal" class="font-bold text-lg text-blue-700 border-t-2 border-gray-300">₹0</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <p id="emptyInvoiceMessage" class="text-center text-gray-500 mt-4">കൊട്ടേഷനിൽ ഇനങ്ങൾ ഒന്നുമില്ല. മുകളിൽ നിന്ന് ഇനങ്ങൾ ചേർക്കുക.</p>
+
+            <!-- New section for Terms & Conditions -->
+            <div id="terms-and-conditions-section" class="mt-8 pt-6 border-t-2 border-gray-200" style="display: none;">
+                <h3 class="text-xl font-semibold text-gray-700 mb-4">നിബന്ധനകൾ</h3>
+                <ol class="list-decimal list-inside text-sm text-gray-600 space-y-2">
+                    <li>ഡിസൈൻ വർക്കിന്റെ 50% അഡ്വാൻസ് പേയ്മെൻ്റ് ആയി നൽകേണ്ടതാണ്.</li>
+                    <li>വർക്കിന്റെ സങ്കീർണ്ണത അനുസരിച്ച് ഫീസിൽ മാറ്റം വരാം. ഇത് നിങ്ങളെ മുൻകൂട്ടി അറിയിച്ചതിന് ശേഷം മാത്രമേ വർക്ക് ആരംഭിക്കുകയുള്ളൂ.</li>
+                    <li>ഡിസൈൻ പൂർത്തിയായ ശേഷം മൂന്ന് തവണയിൽ കൂടുതൽ തിരുത്തലുകൾ അനുവദിക്കുന്നതല്ല.</li>
+                    <li>തെറ്റുകൾ ഒഴിവാക്കുന്നതിനായി, വർക്ക് തുടങ്ങുന്നതിന് മുൻപ് ആവശ്യമായ എല്ലാ വിവരങ്ങളും, ചിത്രങ്ങളും, സാമ്പിളുകളും നൽകേണ്ടതാണ്.</li>
+                    <li>വ്യക്തമായ വിവരങ്ങൾ ഇല്ലാത്ത വർക്കുകൾക്ക് സമയപരിധി പറയാൻ സാധിക്കില്ല.</li>
+                    <li>1 മുതൽ 3 മണിക്കൂറിനുള്ളിൽ പൂർത്തിയാക്കേണ്ട അർജൻ്റ് വർക്കുകൾക്ക് അധിക തുക ഈടാക്കുന്നതാണ്.</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="mt-8 flex flex-col sm:flex-row justify-end gap-4">
+            <button id="clearBtn" class="btn btn-secondary">ക്ലിയർ ചെയ്യുക</button>
+            <button id="downloadPdfBtn" class="btn btn-primary flex items-center justify-center gap-2" disabled>
+                <div id="loadingSpinner" class="hidden loader"></div>
+                <span id="downloadText">PDF ഡൗൺലോഡ് ചെയ്യുക</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Message Box -->
+    <div id="messageBox" class="message-box">
+        <p id="messageText"></p>
+    </div>
+
+    <!-- jsPDF and html2canvas CDN for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <script>
+        // ഉൽപ്പന്നങ്ങളുടെയും വിലകളുടെയും ഡാറ്റ
+        const products = {
+            'basic-poster': { name: 'ബേസിക് പോസ്റ്റർ', price: 80 },
+            'semi-creative-poster': { name: 'സെമി ക്രിയേറ്റീവ് പോസ്റ്റർ', price: 130 },
+            'mega-creative-poster': { name: 'മെഗാ ക്രിയേറ്റീവ് പോസ്റ്റർ', price: 500 },
+            'basic-video': { name: 'ബേസിക് വീഡിയോ', price: 250 },
+            'voice-over-video': { name: 'വോയിസ് ഓവർ വീഡിയോ', price: 250 },
+            'voice-animation-video': { name: 'വോയിസ് ആനിമേഷൻ + മോഷൻ എലമെന്റ്സ് വീഡിയോ', price: 500 },
+            'avatar-video': { name: 'അവതാരികയോട് കൂടിയ വീഡിയോ (5 സെക്കൻഡ്)', price: 600 }
+        };
+
+        const itemCheckboxes = document.querySelectorAll('input[name="item"]');
+        const quantityInput = document.getElementById('quantity');
+        const invoiceTableBody = document.getElementById('invoiceTableBody');
+        const grandTotalDisplay = document.getElementById('grandTotal');
+        const emptyInvoiceMessage = document.getElementById('emptyInvoiceMessage');
+        const downloadPdfBtn = document.getElementById('downloadPdfBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const invoiceDetails = document.getElementById('invoice-details');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const downloadText = document.getElementById('downloadText');
+        const messageBox = document.getElementById('messageBox');
+        const messageText = document.getElementById('messageText');
+        const termsAndConditionsSection = document.getElementById('terms-and-conditions-section');
+
+        // ഒരു മെസ്സേജ് ബോക്സ് കാണിക്കാനുള്ള ഫംഗ്ഷൻ
+        function showMessage(message) {
+            messageText.textContent = message;
+            messageBox.style.display = 'block';
+            setTimeout(() => {
+                messageBox.style.display = 'none';
+            }, 3000); // 3 സെക്കൻഡിനു ശേഷം ബോക്സ് മറയ്ക്കുക
+        }
+
+        // എല്ലാ വിവരങ്ങളും അപ്‌ഡേറ്റ് ചെയ്യുന്നതിനുള്ള പ്രധാന ഫംഗ്ഷൻ
+        function updateInvoice() {
+            let grandTotal = 0;
+            invoiceTableBody.innerHTML = '';
+            
+            const quantity = parseInt(quantityInput.value, 10);
+            const selectedItems = Array.from(itemCheckboxes).filter(checkbox => checkbox.checked);
+
+            if (selectedItems.length === 0 || quantity <= 0 || isNaN(quantity)) {
+                emptyInvoiceMessage.classList.remove('hidden');
+                downloadPdfBtn.disabled = true;
+                grandTotalDisplay.textContent = `₹0`;
+                return;
+            }
+
+            emptyInvoiceMessage.classList.add('hidden');
+            downloadPdfBtn.disabled = false;
+            
+            selectedItems.forEach(selectedItem => {
+                const selectedItemValue = selectedItem.value;
+                const selectedProduct = products[selectedItemValue];
+                
+                const totalItemPrice = selectedProduct.price * quantity;
+                grandTotal += totalItemPrice;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="whitespace-nowrap">${selectedProduct.name}</td>
+                    <td>${quantity}</td>
+                    <td>₹${selectedProduct.price}</td>
+                    <td>₹${totalItemPrice}</td>
+                `;
+                invoiceTableBody.appendChild(row);
+            });
+
+            grandTotalDisplay.textContent = `₹${grandTotal}`;
+        }
+        
+        // ക്വാണ്ടിറ്റിയും ചെക്ക്ബോക്സുകളും മാറുമ്പോൾ തുക തനിയെ അപ്‌ഡേറ്റ് ചെയ്യാനുള്ള ഇവൻ്റുകൾ
+        itemCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', updateInvoice);
+        });
+
+        quantityInput.addEventListener('input', updateInvoice);
+
+        // ഇൻവോയ്സ് ക്ലിയർ ചെയ്യാനുള്ള ഇവൻ്റ്
+        clearBtn.addEventListener('click', () => {
+            document.getElementById('customerName').value = '';
+            document.getElementById('enquiryDate').value = '';
+            document.getElementById('phoneNumber').value = '';
+            document.getElementById('location').value = '';
+            document.getElementById('display-name').textContent = '';
+            document.getElementById('display-date').textContent = '';
+            document.getElementById('display-phone').textContent = '';
+            document.getElementById('display-location').textContent = '';
+            invoiceDetails.classList.add('hidden');
+            // Uncheck all checkboxes on clear
+            itemCheckboxes.forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            quantityInput.value = '1';
+            updateInvoice();
+        });
+
+        // PDF ഡൗൺലോഡ് ചെയ്യുന്നതിനുള്ള ഇവൻ്റ്
+        downloadPdfBtn.addEventListener('click', async () => {
+            // Display customer details
+            const customerName = document.getElementById('customerName').value;
+            const enquiryDate = document.getElementById('enquiryDate').value;
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            const location = document.getElementById('location').value;
+
+            if (!customerName || !enquiryDate || !phoneNumber || !location) {
+                showMessage("ദയവായി എല്ലാ വിവരങ്ങളും പൂരിപ്പിക്കുക.");
+                return;
+            }
+
+            document.getElementById('display-name').textContent = customerName;
+            document.getElementById('display-date').textContent = enquiryDate;
+            document.getElementById('display-phone').textContent = phoneNumber;
+            document.getElementById('display-location').textContent = location;
+            invoiceDetails.classList.remove('hidden');
+
+            loadingSpinner.classList.remove('hidden');
+            downloadText.textContent = "ഡൗൺലോഡ് ചെയ്യുന്നു...";
+            downloadPdfBtn.disabled = true;
+            
+            const invoiceContent = document.getElementById('invoice-content');
+
+            // ഷോർട്ട് കട്ട് ആയി വെബ് പേജിൽ നിബന്ധനകൾ കാണിക്കുക
+            termsAndConditionsSection.style.display = 'block';
+
+            try {
+                // Generate canvas from content
+                const element = invoiceContent;
+                const canvas = await html2canvas(element, { scale: 2, useCORS: true });
+                
+                const imgData = canvas.toDataURL('image/png');
+                const { jsPDF } = window.jspdf;
+                
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const imgWidth = 210; 
+                const pageHeight = 297;  
+                const imgHeight = canvas.height * imgWidth / canvas.width;
+                let heightLeft = imgHeight;
+                let position = 0;
+
+                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+
+                while (heightLeft > 0) {
+                    position = heightLeft - imgHeight;
+                    pdf.addPage();
+                    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                }
+
+                pdf.save(`Homerage_Quotation_${customerName}.pdf`);
+                
+            } catch (error) {
+                console.error("PDF generation failed:", error);
+                showMessage("PDF ഡൗൺലോഡ് ചെയ്യുന്നതിൽ ഒരു പിശക് സംഭവിച്ചു. വീണ്ടും ശ്രമിക്കുക.");
+            } finally {
+                loadingSpinner.classList.add('hidden');
+                downloadText.textContent = "PDF ഡൗൺലോഡ് ചെയ്യുക";
+                downloadPdfBtn.disabled = false;
+                // PDF ഉണ്ടാക്കിയതിന് ശേഷം നിബന്ധനകൾ വീണ്ടും മറയ്ക്കുക
+                termsAndConditionsSection.style.display = 'none';
+            }
+        });
+        
+        // Initial invoice update on page load
+        window.onload = updateInvoice;
+    </script>
+</body>
+</html>

@@ -1,0 +1,2 @@
+# hrfratecalculator-
+HOME RANGE FACATORY RATE CHECKING
